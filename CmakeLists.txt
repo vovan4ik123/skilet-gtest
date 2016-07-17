@@ -1,0 +1,70 @@
+cmake_minimum_required(VERSION 2.8)
+
+project("Test_solution_VS_15")
+
+enable_testing()
+
+set(MY_URL "https://github.com/google/googletest/archive/master.zip")
+set(MY_DOWNLOAD_PATH "${CMAKE_SOURCE_DIR}/gtest_from_git_hub.zip")
+set(MY_EXTRACTED_FILE "${PROJECT_BINARY_DIR}") 		# dir where build
+
+
+
+if (NOT EXISTS "${MY_DOWNLOAD_PATH}")
+message(STATUS "downloading...")
+    file(DOWNLOAD "${MY_URL}" "${MY_DOWNLOAD_PATH}")
+endif()
+
+ 
+message(STATUS "extracting... [tar xfz]")
+execute_process(COMMAND ${CMAKE_COMMAND} -E tar xfz "${MY_DOWNLOAD_PATH}"
+  WORKING_DIRECTORY  MY_EXTRACTED_FILE )
+
+cmake_policy(SET CMP0054 NEW)
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
+    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set(warnings "-Wall -Wextra -Werror")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    set(warnings "/W4 /WX /EHsc")
+endif()
+if (NOT CONFIGURED_ONCE)
+    set(CMAKE_CXX_FLAGS "${warnings}"
+        CACHE STRING "Flags used by the compiler during all build types." FORCE)
+    set(CMAKE_C_FLAGS   "${warnings}"
+        CACHE STRING "Flags used by the compiler during all build types." FORCE)
+endif()
+
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  # using Clang
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  # using GCC
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+  # using Intel C++
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+      option(gtest_force_shared_crt
+           "Use shared (DLL) run-time lib even when Google Test is built as static lib."
+           ON)
+elseif (APPLE)
+    add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # using regular Clang or AppleClang
+endif()
+ 
+set(GMOCK_DIR "${MY_EXTRACTED_FILE}/googletest-master/googlemock/")
+set(GTEST_DIR "${MY_EXTRACTED_FILE}/googletest-master/googletest/")
+
+add_subdirectory(${GMOCK_DIR} ${CMAKE_BINARY_DIR}/gmock)
+
+include_directories(SYSTEM ${GMOCK_DIR}/include
+                           ${GTEST_DIR}/include)
+
+set(RES_CODE main.cpp ProgramInfo.h ProgramInfo.cpp)
+add_executable(Test_solution_VS_15 ${RES_CODE})
+
+target_link_libraries(Test_solution_VS_15 gtest_main gtest gmock_main gmock )
+
+add_test(SolutionTest Test_solution_VS_15)
