@@ -1,11 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
-project("For_Test_VS_15") 
+project("out_program")
 
 enable_testing()
-
-
-set(ALL_EXTRACTED_FILE ${PROJECT_BINARY_DIR} )	# dir where build
 
 function(download_resource MY_URL MY_DOWNLOAD_PATH MY_EXTRACTED_FILE)
 
@@ -58,26 +55,18 @@ function(setting_compiler )
 
 endfunction(setting_compiler)
 
-download_resource( https://github.com/google/googletest/archive/master.zip 
-		   ${CMAKE_SOURCE_DIR}/gtest_from_git_hub.zip 
-		   ${ALL_EXTRACTED_FILE} )
 
 setting_compiler()
- 
-set(GMOCK_DIR "${ALL_EXTRACTED_FILE}/googletest-master/googlemock/")
-set(GTEST_DIR "${ALL_EXTRACTED_FILE}/googletest-master/googletest/")
 
-add_subdirectory(${GMOCK_DIR}  ${CMAKE_BINARY_DIR}/gmock) # what  and   where  build
-include_directories(SYSTEM ${GMOCK_DIR}/include
-                           ${GTEST_DIR}/include )
+add_subdirectory(unit_test)
 
-add_subdirectory(ForConsumer  ${CMAKE_BINARY_DIR}/ForConsumer)
-include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/forConsumer   )
-						 
+add_executable(out_program main.cpp ProgramInfo.h)
 
-set(RES_CODE_TEST ExecuteTests_1.cpp )
-add_executable(For_Test_VS_15 ${RES_CODE_TEST})
-target_link_libraries(For_Test_VS_15 gtest_main gtest gmock_main gmock )
+add_test(TestName unit_test1)
 
+#add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+#                  DEPENDS unit_test1)
 
-add_test(My_Test_1 For_Test_VS_15)
+#add_custom_command(TARGET out_program PRE_BUILD
+#               COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure)
+

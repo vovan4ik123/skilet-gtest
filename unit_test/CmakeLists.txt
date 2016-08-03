@@ -1,0 +1,22 @@
+set(EXTRACTED_FILE ${PROJECT_BINARY_DIR} )	# dir where build
+
+download_resource( https://github.com/google/googletest/archive/master.zip 
+		   ${EXTRACTED_FILE}/gtest_from_git_hub.zip 
+		   ${EXTRACTED_FILE} )
+
+setting_compiler()
+ 
+set(GMOCK_DIR "${EXTRACTED_FILE}/googletest-master/googlemock/")
+set(GTEST_DIR "${EXTRACTED_FILE}/googletest-master/googletest/")
+
+add_subdirectory(${GMOCK_DIR}  ${EXTRACTED_FILE}/gmock) # what  and   where  build
+include_directories(SYSTEM ${GMOCK_DIR}/include
+                           ${GTEST_DIR}/include )
+
+include_directories(SYSTEM ${CMAKE_SOURCE_DIR}  )
+						 
+
+add_executable(unit_test1 ExecuteTests_1.cpp)
+target_link_libraries(unit_test1 gtest_main gtest gmock_main gmock )
+
+add_test(unit_test1 unit_test1)
