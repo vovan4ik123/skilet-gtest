@@ -20,7 +20,7 @@ private:
 	~ProgramInfo() {};
 	ProgramInfo(const ProgramInfo&);
 
-	const char* ProgramVersion = "0.0.1";
+	const char* const ProgramVersion = "0.0.1";
 
 };
 
